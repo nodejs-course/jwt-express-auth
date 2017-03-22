@@ -1,0 +1,35 @@
+version: "2"
+services:
+  app:
+    build: .
+    command: "pm2-docker process.json"
+    ports:
+      - "3017:3000"
+    depends_on:
+       - mongodb
+    environment:
+      NODE_ENV: development
+      MONGODB_HOST: mongodb
+      MONGODB_DATABASE: "jwt-express-auth"
+      JWT_SECRET: "somesecret"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+
+  mongodb:
+    image: mongo
+    ports:
+      - 27077:27017
+      - 28077:28017
+    volumes:
+      - "mongodb:/data/db"
+    command: --smallfiles --rest
+
+volumes:
+  mongodb:
+    external:
+      name: mongodb
+
+networks:
+  default:
+    driver: bridge
